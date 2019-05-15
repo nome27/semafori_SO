@@ -7,7 +7,7 @@
 #include "disastrOS_semdescriptor.h"
 
 void internal_semOpen(){
-	int id= running->syscall_args[0];  //id del semaforo
+	int sem_id= running->syscall_args[0];  //id del semaforo
 	int count= running-> syscall_args[1];    //contatore del semaforo	
 	
 	//Semaphore è la struttura dei semafori
@@ -15,10 +15,10 @@ void internal_semOpen(){
 	//le funzioni dei semafori sono in disastrOS_semaphore.c
 	
 	//devo verificare il il semaforo è già nella lista dei semafori
-	Semaphore* sem_aux=SemaphoreList_byId(&semaphores_list, id);
+	Semaphore* sem_aux=SemaphoreList_byId(&semaphores_list, sem_id);
 	
 	if(sem_aux=NULL){ //se il semaforo non esiste
-		Semaphore* sem= Semaphore_alloc(id, count);  //alloco il semaforo passando id e contatore
+		Semaphore* sem= Semaphore_alloc(sem_id, count);  //alloco il semaforo passando id e contatore
 		List_insert(&semaphores_list, semaphores_list.last, sem); //e inserisco il semaforo alla fine della lista dei semafori attivi
 	}
 	
