@@ -31,6 +31,7 @@
 
 //aggiunte 
 #define DSOS_ERRDESCR -14
+#define DSOS_ERRNOTOPENED -15
 
 // syscall numbers
 #define DSOS_MAX_SYSCALLS 32

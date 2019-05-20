@@ -21,10 +21,32 @@ void internal_semPost(){
   Semaphore* sem= sem_descr->semaphore;
 
   //se il semaforo non è presente restituisco un errore
-  
   if (!sem) {
-
+    running->syscall_retvalue =DSOS_ERRNOTOPENED;  
     return ;
   }
+
+  (sem->counter)++;
+
+  if(sem->counter<=0){   //se il contatore è <=0, inserisco il processo in running nella lista dei ready
+    List_insert(&ready_list, ready_list.last, (ListItem*) running);
+    
+    //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
+    SemDescriptorPtr* sem_descr_ptr= (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, (ListItem*) sem->waiting_descriptors.first);
+    
+    List_insert(&sem->descriptors, sem->descriptors.last, (ListItem*) sem_descr_ptr); //lista dei descrittori attivi
+
+    List_detach(&waiting_list, (ListItem*) sem_descr_ptr->descriptor->pcb);
+
+    running->status = Ready;   //status del processo
+    running = sem_descr_ptr->descriptor->pcb;  //metto in esecuzione il pcb del semaforo 
+
+  }
+  
+
+  //se tutta l'operazione va a buon fine
+  running->syscall_retvalue = 0;
+
+  return;
 
 }
