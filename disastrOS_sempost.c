@@ -26,9 +26,9 @@ void internal_semPost(){
     return ;
   }
 
-  (sem->counter)++;
+  sem->count++;
 
-  if(sem->counter<=0){   //se il contatore è <=0, inserisco il processo in running nella lista dei ready
+  if(sem->count<=0){   //se il contatore è <=0, inserisco il processo in running nella lista dei ready
     List_insert(&ready_list, ready_list.last, (ListItem*) running);
     
     //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
