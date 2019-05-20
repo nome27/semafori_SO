@@ -46,7 +46,6 @@ void internal_semPost(){
 
   //se tutta l'operazione va a buon fine
   running->syscall_retvalue = 0;
-
   return;
 
 }

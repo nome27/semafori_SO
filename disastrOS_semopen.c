@@ -33,7 +33,6 @@ void internal_semOpen(){
 	List_insert(running->sem_descriptors, sem_descriptors.last, sem_descr_ptr);
 	
 	running-> syscall_retvalue=sem_descr-> fd;
-   
     return;
 }
 	
