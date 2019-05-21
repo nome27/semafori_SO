@@ -7,5 +7,5 @@
 #include "disastrOS_semdescriptor.h"
 
 void internal_semClose(){
-  // do stuff :)
+  
 }
