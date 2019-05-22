@@ -289,19 +289,19 @@ void disastrOS_sleep(int sleep_time) {
 
 
 //aggiunti 
-void disastrOS_semOpen(int sem_id, int count){
+int disastrOS_semOpen(int sem_id, int count){
   return disastrOS_syscall(DSOS_CALL_SEMOPEN, sem_id, count);
 }
 
-void disastrOS_semPost(int sem_id){
+int disastrOS_semPost(int sem_id){
   return disastrOS_syscall(DSOS_CALL_SEMPOST, sem_id);
 }
 
-void disastrOS_semWait(int sem_id){
+int disastrOS_semWait(int sem_id){
   return disastrOS_syscall(DSOS_CALL_SEMWAIT, sem_id);
 }
 
-void disastrOS_semClose(int sem_id){
+int disastrOS_semClose(int sem_id){
   return disastrOS_syscall(DSOS_CALL_SEMCLOSE, sem_id);
 }
 //**********************************************

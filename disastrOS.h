@@ -37,10 +37,10 @@ int disastrOS_closeResource(int fd) ;
 int disastrOS_destroyResource(int resource_id);
 
 //aggiunte per semafori*********************
-void disastrOS_semOpen(int sem_id, int count);
-void disastrOS_semClose(int sem_id);
-void disastrOS_semPost(int sem_id);
-void disastrOS_semWait(int sem_id);
+int disastrOS_semOpen(int sem_id, int count);
+int disastrOS_semClose(int sem_id);
+int disastrOS_semPost(int sem_id);
+int disastrOS_semWait(int sem_id);
 
 //***************************************
 
