@@ -304,7 +304,7 @@ void disastrOS_semWait(int sem_id){
 void disastrOS_semClose(int sem_id){
   return disastrOS_syscall(DSOS_CALL_SEMCLOSE, sem_id);
 }
-
+//**********************************************
 
 
 int disastrOS_getpid(){
