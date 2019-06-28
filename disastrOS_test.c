@@ -4,6 +4,35 @@
 
 #include "disastrOS.h"
 
+//
+#define BUFFER_LENGTH 50;
+
+int buf[BUFFER_LENGTH];
+int write_index=0;
+int read_index=0;
+
+
+
+//nel produttore faccio la wait in modo che mentre uno scrive, non può scrivere nessun altro
+//la stessa cosa per la scrittura
+
+int producer(){
+  int ret;
+  disastrOS_semWait(empty_sem);
+  disastrOS_semWait(write_sem);
+  
+  buf[write_index]= ret;
+  write_index= (write_index+1)% BUFFER_LENGTH;
+  ret++;
+
+  disastrOS_semPost(write_sem);
+  disastrOS_semPost(filled_sem); 
+ 
+  return ret;
+}
+
+
+
 // we need this to handle the sleep state
 void sleeperFunction(void* args){
   printf("Hello, I am the sleeper, and I sleep %d\n",disastrOS_getpid());
@@ -14,6 +43,7 @@ void sleeperFunction(void* args){
 }
 
 void childFunction(void* args){
+  //quando apro un figlio faccio partire il semaforo (quindi la open)
   printf("Hello, I am the child function %d\n",disastrOS_getpid());
   printf("I will iterate a bit, before terminating\n");
   int type=0;
