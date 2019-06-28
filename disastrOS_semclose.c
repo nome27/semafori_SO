@@ -43,5 +43,3 @@ void internal_semClose(){
   running->syscall_retvalue = 0;
   return;
 }
-
-}

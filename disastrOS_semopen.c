@@ -11,14 +11,12 @@ void internal_semOpen(){
 	int count= running-> syscall_args[1];    //contatore del semaforo	
 	
 	//Semaphore è la struttura dei semafori
-	
 	//le funzioni dei semafori sono in disastrOS_semaphore.c
-	
 	//devo verificare il il semaforo è già nella lista dei semafori
-	Semaphore* sem_aux=SemaphoreList_byId(&semaphores_list, sem_id);
+	Semaphore* sem=SemaphoreList_byId(&semaphores_list, sem_id);
 	
-	if(sem_aux=NULL){ //se il semaforo non esiste
-		Semaphore* sem= Semaphore_alloc(sem_id, count);  //alloco il semaforo passando id e contatore
+	if(sem==NULL){ //se il semaforo non esiste
+		sem= Semaphore_alloc(sem_id, count);  //alloco il semaforo passando id e contatore
 		List_insert(&semaphores_list, semaphores_list.last, sem); //e inserisco il semaforo alla fine della lista dei semafori attivi
 	}
 	
@@ -30,11 +28,9 @@ void internal_semOpen(){
 	SemDescriptorPtr* sem_descr_ptr=SemDescriptorPtr_alloc(sem_descr);
 	
 	//inserisco il puntatore al descrittore(sem_descr_ptr) alla lista dei puntatori ai descrittori dei semafori
-	List_insert(running->sem_descriptors, sem_descriptors.last, sem_descr_ptr);
+	List_insert(&sem->descriptors, sem->descriptors.last, sem_descr_ptr);
 	
 	running-> syscall_retvalue=sem_descr-> fd;
     return;
 }
-	
-	
-	
+

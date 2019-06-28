@@ -4,12 +4,14 @@
 
 #include "disastrOS.h"
 
-//
-#define BUFFER_LENGTH 50;
+#define CYCLES 10
+#define BUFFER_LENGTH 50
 
+int filled_sem, empty_sem, read_sem, write_sem;
 int buf[BUFFER_LENGTH];
 int write_index=0;
 int read_index=0;
+int shared_variable=0;
 
 
 
@@ -17,18 +19,32 @@ int read_index=0;
 //la stessa cosa per la scrittura
 
 int producer(){
-  int ret;
   disastrOS_semWait(empty_sem);
   disastrOS_semWait(write_sem);
   
-  buf[write_index]= ret;
+  buf[write_index]= shared_variable;
   write_index= (write_index+1)% BUFFER_LENGTH;
-  ret++;
+  shared_variable++;
 
   disastrOS_semPost(write_sem);
   disastrOS_semPost(filled_sem); 
  
-  return ret;
+  return shared_variable;
+}
+
+int consumer(){
+  int x;
+
+  disastrOS_semWait(filled_sem);
+  disastrOS_semWait(read_sem);
+
+  x= buf[read_index];
+  read_index=(read_index+1)% BUFFER_LENGTH;
+
+  disastrOS_semPost(read_sem);
+  disastrOS_semPost(empty_sem);
+
+  return x;
 }
 
 
@@ -46,18 +62,36 @@ void childFunction(void* args){
   //quando apro un figlio faccio partire il semaforo (quindi la open)
   printf("Hello, I am the child function %d\n",disastrOS_getpid());
   printf("I will iterate a bit, before terminating\n");
-  int type=0;
-  int mode=0;
-  int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
-  printf("fd=%d\n", fd);
-  printf("PID: %d, terminating\n", disastrOS_getpid());
+  
 
-  for (int i=0; i<(disastrOS_getpid()+1); ++i){
-    printf("PID: %d, iterate %d\n", disastrOS_getpid(), i);
-    disastrOS_sleep((20-disastrOS_getpid())*5);
-  }
-  disastrOS_exit(disastrOS_getpid()+1);
+  //int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
+  //printf("fd=%d\n", fd);
+  printf("PID: %d, terminating\n", disastrOS_getpid());
+  
+  filled_sem = disastrOS_semOpen(1, 0);  //0 è il numero di posti del buffer occupati all'inizio
+  empty_sem = disastrOS_semOpen(2, BUFFER_LENGTH);  //buffer_length indica il numero di posti liberi all'inizio
+  read_sem = disastrOS_semOpen(3, 1);
+  write_sem = disastrOS_semOpen(4,1);
+
+  for (int i=0; i<CYCLES; ++i){
+   if(disastrOS_getpid()%2==0)// se il resto è pari parte la producer, altrimenti la consumer
+     producer();
+   else
+     consumer();
+   }
+
+  disastrOS_printStatus();
+
+  printf("chiude semafori");
+
+  disastrOS_semClose(filled_sem);
+  disastrOS_semClose(empty_sem);
+  disastrOS_semClose(read_sem);
+  disastrOS_semClose(write_sem);
+
+  disastrOS_exit(disastrOS_getpid());
 }
+
 
 
 void initFunction(void* args) {
@@ -65,16 +99,9 @@ void initFunction(void* args) {
   printf("hello, I am init and I just started\n");
   disastrOS_spawn(sleeperFunction, 0);
   
-
   printf("I feel like to spawn 10 nice threads\n");
   int alive_children=0;
   for (int i=0; i<10; ++i) {
-    int type=0;
-    int mode=DSOS_CREATE;
-    printf("mode: %d\n", mode);
-    printf("opening resource (and creating if necessary)\n");
-    int fd=disastrOS_openResource(i,type,mode);
-    printf("fd=%d\n", fd);
     disastrOS_spawn(childFunction, 0);
     alive_children++;
   }

@@ -26,9 +26,8 @@ void internal_semWait(){
 
 
   if (sem->count < 0){
-    List_detach(&sem->descriptors, (ListItem*)sem_descr_ptr); //rimuovo il descrittore del processo dalla lista dei descrittori(sem->descriptors)
-    
     SemDescriptorPtr* sem_descr_ptr= sem_descr->ptr;  //salvo il puntatore del descrittore
+    List_detach(&sem->descriptors, (ListItem*)sem_descr_ptr); //rimuovo il descrittore del processo dalla lista dei descrittori(sem->descriptors)
 
     List_insert(&sem->waiting_descriptors, sem->waiting_descriptors.last, (ListItem*) sem_descr->ptr); //lo inserisco in fondo alla lista di waiting
     running->status = Waiting; //stato del processo 
