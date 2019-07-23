@@ -22,9 +22,11 @@ int producer(){
   disastrOS_semWait(empty_sem);
   disastrOS_semWait(write_sem);
   
+  //inizio sezione critica
   buf[write_index]= shared_variable;
   write_index= (write_index+1)% BUFFER_LENGTH;
   shared_variable++;
+  //fine sezione critica
 
   disastrOS_semPost(write_sem);
   disastrOS_semPost(filled_sem); 
@@ -32,14 +34,16 @@ int producer(){
   return shared_variable;
 }
 
-int consumer(){
+int consumer(){   //effettuo la lettura
   int x;
 
   disastrOS_semWait(filled_sem);
   disastrOS_semWait(read_sem);
-
+ 
+  //inizio sezione critica lettura
   x= buf[read_index];
   read_index=(read_index+1)% BUFFER_LENGTH;
+  //fine sezione critica
 
   disastrOS_semPost(read_sem);
   disastrOS_semPost(empty_sem);
@@ -62,19 +66,22 @@ void childFunction(void* args){
   //quando apro un figlio faccio partire il semaforo (quindi la open)
   printf("Hello, I am the child function %d\n",disastrOS_getpid());
   printf("I will iterate a bit, before terminating\n");
-  
+  //int type=0;
+  //int mode=0;
 
   //int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
   //printf("fd=%d\n", fd);
-  printf("PID: %d, terminating\n", disastrOS_getpid());
+  //printf("PID: %d, terminating\n", disastrOS_getpid());
   
+  printf("apertura semafori\n");
+
   filled_sem = disastrOS_semOpen(1, 0);  //0 è il numero di posti del buffer occupati all'inizio
   empty_sem = disastrOS_semOpen(2, BUFFER_LENGTH);  //buffer_length indica il numero di posti liberi all'inizio
-  read_sem = disastrOS_semOpen(3, 1);
-  write_sem = disastrOS_semOpen(4,1);
+  read_sem = disastrOS_semOpen(3, 1);  //semaforo per la lettura
+  write_sem = disastrOS_semOpen(4,1);  //semaforo per la scrittura
 
   for (int i=0; i<CYCLES; ++i){
-   if(disastrOS_getpid()%2==0)// se il resto è pari parte la producer, altrimenti la consumer
+   if(disastrOS_getpid()%2==0)// se il pid  è pari parte la producer(scrittura nel buffer), altrimenti la consumer
      producer();
    else
      consumer();
@@ -84,8 +91,8 @@ void childFunction(void* args){
 
   printf("chiude semafori");
 
-  disastrOS_semClose(filled_sem);
   disastrOS_semClose(empty_sem);
+  disastrOS_semClose(filled_sem);
   disastrOS_semClose(read_sem);
   disastrOS_semClose(write_sem);
 
@@ -98,10 +105,16 @@ void initFunction(void* args) {
   disastrOS_printStatus();
   printf("hello, I am init and I just started\n");
   disastrOS_spawn(sleeperFunction, 0);
-  
+
+  //int fd[10]; 
+  printf(" stato iniziale buffer\n");
+  for(int i=0; i < BUFFER_LENGTH; i++){
+    printf("%d ", buf[i]);
+  }
+
   printf("I feel like to spawn 10 nice threads\n");
   int alive_children=0;
-  for (int i=0; i<10; ++i) {
+  for (int i=0; i<10; ++i) {   //creo 10 thread
     disastrOS_spawn(childFunction, 0);
     alive_children++;
   }
@@ -115,6 +128,14 @@ void initFunction(void* args) {
 	   pid, retval, alive_children);
     --alive_children;
   }
+
+  printf(" stato finale buffer\n");
+  for(int i=0; i < BUFFER_LENGTH; i++){
+    printf("%d ", buf[i]);
+  }
+
+
+  printf("\n");
   printf("shutdown!");
   disastrOS_shutdown();
 }
