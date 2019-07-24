@@ -21,17 +21,24 @@ void internal_semOpen(){
 		sem= Semaphore_alloc(sem_id, count);  //alloco il semaforo passando id e contatore se non esiste
 		List_insert(&semaphores_list, semaphores_list.last, (ListItem*)sem); //e inserisco il semaforo alla fine della lista dei semafori attivi
 	}
+	printf("allocazione del semaforo %d riuscita \n", sem_id);
 	
 	//alloco il descrittore del semaforo
 	SemDescriptor* sem_descr= SemDescriptor_alloc(running-> last_sem_fd,sem,running);//prende in ingresso un intero, il semaforo, e il nome del pcb
 	 
 	(running->last_sem_fd)++;   //incrememnto l'ultimo numero sem_fd
+	
+
+
+	fininre de vedere qui
+	 List_insert(&running->sem_descriptors, running->sem_descriptors.last, (ListItem*) sem_descr);  //lo inserisco nell alista dei descrittori
+	
 	//e il puntatore al descrittore(precedentemente allocato) del semaforo (id)
 	SemDescriptorPtr* sem_descr_ptr=SemDescriptorPtr_alloc(sem_descr);
-	
 	//inserisco il puntatore al descrittore(sem_descr_ptr) alla lista dei puntatori ai descrittori dei semafori
-	List_insert(&sem->descriptors, sem->descriptors.last, sem_descr_ptr);
+	List_insert(&sem->descriptors, sem->descriptors.last, (ListItem*) sem_descr_ptr);
 	
+
 	running-> syscall_retvalue=sem_descr-> fd; //il valore di ritorno della syscall è il file descr del semaforo
     return;
 }

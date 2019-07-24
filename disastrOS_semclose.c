@@ -13,7 +13,7 @@ void internal_semClose(){
   
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
-    //DA SISTEMAREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    printf("operazione chiusura semaforo %d fallita \n", sem_id);
     running->syscall_retvalue =DSOS_ERRDESCR;  //errore
     return;
   }
@@ -38,6 +38,7 @@ void internal_semClose(){
   if(sem->descriptors.size == 0 && sem->waiting_descriptors.size==0){
     List_detach(&semaphores_list, (ListItem*)sem);
     Semaphore_free(sem);
+    printf("chiusura semaforo %d\n",sem_id+1);
   }
     
   running->syscall_retvalue = 0;

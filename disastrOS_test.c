@@ -11,7 +11,7 @@ int filled_sem, empty_sem, read_sem, write_sem;
 int buf[BUFFER_LENGTH];
 int write_index=0;
 int read_index=0;
-int shared_variable=0;
+int shared_variable;
 
 
 
@@ -81,15 +81,19 @@ void childFunction(void* args){
   write_sem = disastrOS_semOpen(4,1);  //semaforo per la scrittura
 
   for (int i=0; i<CYCLES; ++i){
-   if(disastrOS_getpid()%2==0)// se il pid  è pari parte la producer(scrittura nel buffer), altrimenti la consumer
+   if(disastrOS_getpid()%2==0){ // se il pid  è pari parte la producer(scrittura nel buffer), altrimenti la consumer
      producer();
+     printf("thread %d: ho scritto nel buffer il valore %d\n", disastrOS_getpid(),producer());
+   }
    else
      consumer();
+      printf("thread %d: ho letto dal buffer il valore %d\n", disastrOS_getpid(),consumer());
    }
 
   disastrOS_printStatus();
+  printf("sta terminando pid=%d\n",disastrOS_getpid());
 
-  printf("chiude semafori");
+  printf("chiusura semafori\n");
 
   disastrOS_semClose(empty_sem);
   disastrOS_semClose(filled_sem);
@@ -104,18 +108,21 @@ void childFunction(void* args){
 void initFunction(void* args) {
   disastrOS_printStatus();
   printf("hello, I am init and I just started\n");
-  disastrOS_spawn(sleeperFunction, 0);
+ // disastrOS_spawn(sleeperFunction, 0);
 
   //int fd[10]; 
   printf(" stato iniziale buffer\n");
   for(int i=0; i < BUFFER_LENGTH; i++){
     printf("%d ", buf[i]);
   }
+   
+   shared_variable=1;   //variabile globale settata a 1
 
   printf("I feel like to spawn 10 nice threads\n");
-  int alive_children=0;
+  int alive_children=0;        //processi figlio vivi
   for (int i=0; i<10; ++i) {   //creo 10 thread
     disastrOS_spawn(childFunction, 0);
+    printf("ho creato il %dth threadn", i+1);
     alive_children++;
   }
 

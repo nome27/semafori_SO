@@ -11,6 +11,7 @@ void internal_semWait(){
   
   SemDescriptor* sem_descr = SemDescriptorList_byFd(&running->sem_descriptors, sem_id); // prendo il descrittore del semaforo tramite sem_id
   if (!sem_descr) {  //controllo che esista
+    printf("Semwait fallita");
     running->syscall_retvalue =DSOS_ERRDESCR;  //errore
     return;
   }
@@ -18,17 +19,16 @@ void internal_semWait(){
   Semaphore* sem= sem_descr->semaphore;      //prendo il semaforo sem dal sem_descriptor(lo salvo)
   
   if (!sem) {//se il semaforo non è presente resistuisco un errore
+    printf("errore nel semaforo");
     running->syscall_retvalue =DSOS_ERRNOTOPENED;  
     return ;
   }
   
   sem->count--;   //decremento il contatore del semaforo
-
+  SemDescriptorPtr* sem_descr_ptr= sem_descr->ptr;  //salvo il puntatore del descrittore
 
   if (sem->count < 0){
-    SemDescriptorPtr* sem_descr_ptr= sem_descr->ptr;  //salvo il puntatore del descrittore
     List_detach(&sem->descriptors, (ListItem*)sem_descr_ptr); //rimuovo il descrittore del processo dalla lista dei descrittori(sem->descriptors)
-
     List_insert(&sem->waiting_descriptors, sem->waiting_descriptors.last, (ListItem*) sem_descr->ptr); //lo inserisco in fondo alla lista di waiting
     running->status = Waiting; //stato del processo 
     List_insert(&waiting_list, waiting_list.last, (ListItem*) running); //inserisco il processo in esecuzione nella waiting_list

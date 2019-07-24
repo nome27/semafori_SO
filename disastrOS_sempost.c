@@ -13,6 +13,7 @@ void internal_semPost(){
   
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
+    printf("sempost del semaforo %d fallita \n", sem_id)
     running->syscall_retvalue =DSOS_ERRDESCR;  //errore
     return;
   }
@@ -26,7 +27,7 @@ void internal_semPost(){
     return ;
   }
 
-  sem->count++;
+  sem->count++;  //incremeento il contantore di sem
 
   if(sem->count<=0){   //se il contatore è <=0, inserisco il processo in running nella lista dei ready
     List_insert(&ready_list, ready_list.last, (ListItem*) running);
