@@ -28,9 +28,6 @@ void internal_semOpen(){
 	 
 	(running->last_sem_fd)++;   //incrememnto l'ultimo numero sem_fd
 	
-
-
-	fininre de vedere qui
 	 List_insert(&running->sem_descriptors, running->sem_descriptors.last, (ListItem*) sem_descr);  //lo inserisco nell alista dei descrittori
 	
 	//e il puntatore al descrittore(precedentemente allocato) del semaforo (id)
