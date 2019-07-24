@@ -123,7 +123,7 @@ void initFunction(void* args) {
   int alive_children=0;        //processi figlio vivi
   for (int i=0; i<10; ++i) {   //creo 10 thread
     disastrOS_spawn(childFunction, 0);
-    printf("ho creato il %dth threadn", i+1);
+    printf("ho creato il %dth thread\n", i+1);
     alive_children++;
   }
 

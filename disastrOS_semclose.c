@@ -9,7 +9,7 @@
 void internal_semClose(){
   int sem_id= running->syscall_args[0];   //primo parametro id del semaforo
 
-  SemDescriptor* sem_descr=SemDescriptorList_byId(&running->sem_descriptors, sem_id);
+  SemDescriptor* sem_descr=SemDescriptorList_byFd(&running->sem_descriptors, sem_id);
   
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  

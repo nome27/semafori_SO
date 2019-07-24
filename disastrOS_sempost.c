@@ -5,49 +5,36 @@
 #include "disastrOS_syscalls.h"
 #include "disastrOS_semaphore.h"
 #include "disastrOS_semdescriptor.h"
-#include "disastrOS_constants.h"
+
 
 void internal_semPost(){
-  int sem_id= running->syscall_args[0];   //primo parametro id del semaforo
+    int sem_id = running->syscall_args[0];  //primo parametro id del semaforo
+    
+    SemDescriptor* sem_descr = SemDescriptorList_byFd(&running->sem_descriptors, sem_id); //prendo descrittore del semaforo con quell'id
+    
+    //nel caso in cui la lista dei descrittori sia vuota 
+    if(sem_descr==0){
+        printf("sempost del semaforo %d fallita \n", sem_id);
+        running->syscall_retvalue =  DSOS_ERRDESCR;
+        return;
+    }
+    
+    Semaphore* sem = sem_descr->semaphore; //prendo il semaforo
+    sem->count++; //incremento contatore di s
+    
+    if(sem->count <= 0){ //se il contatore è <=0, inserisco il processo in running nella lista dei ready
+        List_insert(&ready_list, ready_list.last, (ListItem*) running);
+    
+        //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
+        SemDescriptorPtr* sem_descr_ptr = (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, (ListItem*) sem->waiting_descriptors.first); //rimuovo il first descriptor del semaforo dalla lista dei descrittori in attesa
+        List_insert(&sem->descriptors, sem->descriptors.last, (ListItem*) sem_descr_ptr); //lista dei descrittori attivi
+        List_detach(&waiting_list, (ListItem*) sem_descr_ptr->descriptor->pcb); //rimuovo il processo dalla waiting_list tramite il suo puntatore al descrittore
 
-  SemDescriptor* sem_descr=SemDescriptorList(&running->sem_descriptors, sem_id);
-  
-  //nel caso in cui la lista dei descrittori sia vuota 
-  if (!sem_descr) {  
-    printf("sempost del semaforo %d fallita \n", sem_id);
-    running->syscall_retvalue =DSOS_ERRDESCR;  //errore
+        running->status = Ready;
+        running = sem_descr_ptr->descriptor->pcb; //metto in esecuzione il processo rimosso dalla waiting_list (pcb del semaforo)
+    }
+
+    //se tutta l'operazione va a buon fine
+    running->syscall_retvalue = 0;
     return;
-  }
-  //se invece sem_descr non è vuota, 
-  //prendo il semaforo sem dal semdescriptor
-  Semaphore* sem= sem_descr->semaphore;
-
-  //se il semaforo non è presente restituisco un errore
-  if (!sem) {
-    running->syscall_retvalue =DSOS_ERRNOTOPENED;  
-    return ;
-  }
-
-  sem->count++;  //incremeento il contantore di sem
-
-  if(sem->count<=0){   //se il contatore è <=0, inserisco il processo in running nella lista dei ready
-    List_insert(&ready_list, ready_list.last, (ListItem*) running);
-    
-    //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
-    SemDescriptorPtr* sem_descr_ptr= (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, (ListItem*) sem->waiting_descriptors.first);
-    
-    List_insert(&sem->descriptors, sem->descriptors.last, (ListItem*) sem_descr_ptr); //lista dei descrittori attivi
-
-    List_detach(&waiting_list, (ListItem*) sem_descr_ptr->descriptor->pcb);
-
-    running->status = Ready;   //status del processo
-    running = sem_descr_ptr->descriptor->pcb;  //metto in esecuzione il pcb del semaforo 
-
-  }
-  
-
-  //se tutta l'operazione va a buon fine
-  running->syscall_retvalue = 0;
-  return;
-
 }
