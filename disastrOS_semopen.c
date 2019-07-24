@@ -5,7 +5,7 @@
 #include "disastrOS_syscalls.h"
 #include "disastrOS_semaphore.h"
 #include "disastrOS_semdescriptor.h"
-#include "disastrOS_globals.h"
+//#include "disastrOS_globals.h"
 
 void internal_semOpen(){
 	int sem_id= running->syscall_args[0];  //id del semaforo

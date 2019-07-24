@@ -5,6 +5,7 @@
 #include "disastrOS_syscalls.h"
 #include "disastrOS_semaphore.h"
 #include "disastrOS_semdescriptor.h"
+#include "disastrOS_constants.h"
 
 void internal_semPost(){
   int sem_id= running->syscall_args[0];   //primo parametro id del semaforo
@@ -13,7 +14,7 @@ void internal_semPost(){
   
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
-    printf("sempost del semaforo %d fallita \n", sem_id)
+    printf("sempost del semaforo %d fallita \n", sem_id);
     running->syscall_retvalue =DSOS_ERRDESCR;  //errore
     return;
   }

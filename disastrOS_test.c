@@ -3,6 +3,7 @@
 #include <poll.h>
 
 #include "disastrOS.h"
+#include "disastrOS_constants.h"
 
 #define CYCLES 10
 #define BUFFER_LENGTH 50
