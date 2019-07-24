@@ -9,7 +9,7 @@
 void internal_semClose(){
   int sem_id= running->syscall_args[0];   //primo parametro id del semaforo
 
-  SemDescriptor* sem_descr=SemDescriptorList(&running->sem_descriptors, sem_id);
+  SemDescriptor* sem_descr=SemDescriptorList_byId(&running->sem_descriptors, sem_id);
   
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
@@ -29,7 +29,7 @@ void internal_semClose(){
   }
 
   //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
-  SemDescriptorPtr* sem_descr_ptr= (SemDescriptorPtr*) List_detach(&sem->descriptors, (ListItem*) sem_descr->ptr);
+  SemDescriptorPtr* sem_descr_ptr= (SemDescriptorPtr*) List_detach(&sem->descriptors, (ListItem*) (sem_descr->ptr);
     
   //soccome sto facendo la close, devo lberare memoria
   SemDescriptor_free(sem_descr);
