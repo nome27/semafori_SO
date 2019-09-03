@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <poll.h>
-
 #include "disastrOS.h"
 #include "disastrOS_constants.h"
 
@@ -14,28 +13,28 @@ int write_index=0;
 int read_index=0;
 int shared_variable;
 
-
-
-//nel produttore faccio la wait in modo che mentre uno scrive, non può scrivere nessun altro
+//nel produttore(producer) faccio la wait in modo che mentre uno scrive, non può scrivere nessun altro
 //la stessa cosa per la scrittura
 
 int producer(){
   disastrOS_semWait(empty_sem);
   disastrOS_semWait(write_sem);
-  
+
   //inizio sezione critica
+  int ret= shared_variable;
   buf[write_index]= shared_variable;
   write_index= (write_index+1)% BUFFER_LENGTH;
   shared_variable++;
   //fine sezione critica
-
+  
   disastrOS_semPost(write_sem);
   disastrOS_semPost(filled_sem); 
- 
-  return shared_variable;
+
+ // return shared_variable;
+ return ret;
 }
 
-int consumer(){   //effettuo la lettura
+int consumer(){   //effettuo la lettura nel consumer
   int x;
 
   disastrOS_semWait(filled_sem);
@@ -51,8 +50,6 @@ int consumer(){   //effettuo la lettura
 
   return x;
 }
-
-
 
 // we need this to handle the sleep state
 void sleeperFunction(void* args){
@@ -83,21 +80,23 @@ void childFunction(void* args){
 
   for (int i=0; i<CYCLES; ++i){
    if(disastrOS_getpid()%2==0){ // se il pid  è pari parte la producer(scrittura nel buffer), altrimenti la consumer
-     producer();
-     printf("thread %d: ho scritto nel buffer il valore %d\n", disastrOS_getpid(),producer());
+     int prod=producer();
+     printf("thread %d: ho scritto nel buffer il valore %d\n", disastrOS_getpid(),prod);
    }
-   else
-     consumer();
-      printf("thread %d: ho letto dal buffer il valore %d\n", disastrOS_getpid(),consumer());
+   else{
+     int ret= consumer();
+     printf("thread %d: ho letto dal buffer il valore %d\n", disastrOS_getpid(),ret);
    }
+  }
 
   disastrOS_printStatus();
   printf("sta terminando pid=%d\n",disastrOS_getpid());
 
   printf("chiusura semafori\n");
 
-  disastrOS_semClose(empty_sem);
+
   disastrOS_semClose(filled_sem);
+  disastrOS_semClose(empty_sem);
   disastrOS_semClose(read_sem);
   disastrOS_semClose(write_sem);
 
@@ -162,3 +161,6 @@ int main(int argc, char** argv){
   disastrOS_start(initFunction, 0, logfilename);
   return 0;
 }
+
+
+

@@ -14,7 +14,7 @@ void internal_semClose(){
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
     printf("operazione chiusura semaforo %d fallita \n", sem_id);
-    running->syscall_retvalue =DSOS_ERSEMCLOSE;  //errore        ?????????????????????????????????????
+    running->syscall_retvalue =DSOS_ERSEMCLOSE;  //gestione errore in caso di chiusura fallita
     return;
   }
   //se invece sem_descr non è vuota,
@@ -36,8 +36,8 @@ void internal_semClose(){
   SemDescriptorPtr_free(sem_descr_ptr);
  
   if(sem->descriptors.size == 0 && sem->waiting_descriptors.size==0){
-    List_detach(&semaphores_list, (ListItem*)sem);
-    Semaphore_free(sem);
+    List_detach(&semaphores_list, (ListItem*)sem);  //tolgo il semaforo dalla lista dei semafori
+    Semaphore_free(sem);   //libero memoria
     printf("chiusura semaforo %d\n",sem_id+1);
   }
     

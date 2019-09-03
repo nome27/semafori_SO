@@ -16,7 +16,7 @@ void internal_semPost(){
     if(sem_descr==0){
         printf("sempost del semaforo %d fallita \n", sem_id);
         //running->syscall_retvalue =  DSOS_ERRDESCR;
-        running->syscall_retvalue =  DSOS_ESEMPOST;
+        running->syscall_retvalue =  DSOS_ERSEMPOST;
         return;
     }
     
