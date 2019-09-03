@@ -30,8 +30,11 @@
 #define DSOS_ERESOURCEINUSE -13
 
 //aggiunte 
-#define DSOS_ERRDESCR -14
-#define DSOS_ERRNOTOPENED -15
+#define DSOS_ERSEMOPEN -14
+#define DSOS_ERSEMCLOSE -15
+#define DSOS_ERSEMPOST -16
+#define DSOS_ERSEMWAIT -17
+#define DSOS_ERRNOTOPENED -18
 
 // syscall numbers
 #define DSOS_MAX_SYSCALLS 32

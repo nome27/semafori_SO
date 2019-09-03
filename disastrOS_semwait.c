@@ -13,7 +13,8 @@ void internal_semWait(){
   SemDescriptor* sem_descr = SemDescriptorList_byFd(&running->sem_descriptors, sem_id); // prendo il descrittore del semaforo tramite sem_id
   if (!sem_descr) {  //controllo che esista
     printf("Semwait fallita per il semaforo %d\n",sem_id);
-    running->syscall_retvalue =DSOS_ERRDESCR;  //errore
+    //running->syscall_retvalue =DSOS_ERRDESCR;  //errore
+    running->syscall_retvalue =DSOS_ERSEMWAIT;
     return;
   }
 

@@ -145,6 +145,7 @@ void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){
   PCB_init();
   Timer_init();
   Resource_init();
+  Descriptor_init();   //
   Semaphore_init();    //aggiunto
   SemDescriptor_init();  //aggiunto
   init_pcb=0;

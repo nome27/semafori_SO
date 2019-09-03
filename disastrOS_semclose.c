@@ -14,7 +14,7 @@ void internal_semClose(){
   //nel caso in cui la lista dei descrittori sia vuota 
   if (!sem_descr) {  
     printf("operazione chiusura semaforo %d fallita \n", sem_id);
-    running->syscall_retvalue =DSOS_ERRDESCR;  //errore
+    running->syscall_retvalue =DSOS_ERSEMCLOSE;  //errore        ?????????????????????????????????????
     return;
   }
   //se invece sem_descr non è vuota,
