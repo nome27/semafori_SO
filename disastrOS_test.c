@@ -13,6 +13,8 @@ int write_index=0;
 int read_index=0;
 int shared_variable;
 
+
+//applico la struttura produttore consumatore
 //nel produttore(producer) faccio la wait in modo che mentre uno scrive, non può scrivere nessun altro
 //la stessa cosa per la scrittura
 

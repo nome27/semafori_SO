@@ -16,7 +16,7 @@ void internal_semOpen(){
     
 	//se count <0 non posso allocare il semaforo
     if(count < 0 ){
-        printf("  Allocazione semaforo con id=%d fallita poichè count<0\n", sem_id);
+        printf("  Allocazione semaforo con id=%d fallita \n", sem_id);
         running->syscall_retvalue =  DSOS_ERSEMOPEN;
         return;
    }
@@ -28,18 +28,19 @@ void internal_semOpen(){
 	if(sem==0){ //se il semaforo non esiste
 	    printf("creo il semaforo %d\n", sem_id);
 		sem= Semaphore_alloc(sem_id, count);  //alloco il semaforo passando id e contatore se non esiste
-		if(sem==0){ //controllo se il semaforo è stato allocato correttam
+		if(sem==0){ //controllo se il semaforo è stato allocato correttamente
             printf("    Allocazione semaforo con id=%d fallita\n", sem_id);
             running->syscall_retvalue = DSOS_ERSEMOPEN;
             return;
         }
 		List_insert(&semaphores_list, semaphores_list.last, (ListItem*)sem); //e inserisco il semaforo alla fine della lista dei semafori attivi
 	}
-	printf("allocazione del semaforo %d riuscita \n", sem_id);
+	printf("allocazione del semaforo con id=%d riuscita \n", sem_id);
 	
 	//alloco il descrittore del semaforo
 	SemDescriptor* sem_descr= SemDescriptor_alloc(running-> last_sem_fd,sem,running);//prende in ingresso un intero, il semaforo, e il nome del pcb
-	 
+	
+	//controllo: se il sem_descr==0 errore
 	if(sem_descr==0){
 		running->syscall_retvalue = DSOS_ERSEMOPEN ;
         return;
@@ -47,7 +48,7 @@ void internal_semOpen(){
 	
 	(running->last_sem_fd)++;   //incrememnto l'ultimo numero sem_fd (num sem aperti)
 	
-	 List_insert(&running->sem_descriptors, running->sem_descriptors.last, (ListItem*) sem_descr);  //lo inserisco nell alista dei descrittori
+	 List_insert(&running->sem_descriptors, running->sem_descriptors.last, (ListItem*) sem_descr);  //lo inserisco nella lista dei descrittori
 	
 	//e il puntatore al descrittore(precedentemente allocato) del semaforo (id)
 	SemDescriptorPtr* sem_descr_ptr=SemDescriptorPtr_alloc(sem_descr);
