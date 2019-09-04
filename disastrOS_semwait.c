@@ -21,7 +21,7 @@ void internal_semWait(){
   Semaphore* sem= sem_descr->semaphore;      //prendo il semaforo sem dal sem_descriptor(lo salvo)
   
   if (!sem) {//se il semaforo non è presente resistuisco un errore
-    printf("errore nel semaforo");
+    printf("errore nel semaforo\n");
     running->syscall_retvalue =DSOS_ERRNOTOPENED;  
     return ;
   }
