@@ -31,7 +31,7 @@ void internal_semClose(){
   //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
   SemDescriptorPtr* sem_descr_ptr= (SemDescriptorPtr*) List_detach(&sem->descriptors, (ListItem*) (sem_descr->ptr));
     
-  //soccome sto facendo la close, devo lberare memoria
+  //siccome sto facendo la close, devo liberare memoria
   SemDescriptor_free(sem_descr);
   SemDescriptorPtr_free(sem_descr_ptr);
  

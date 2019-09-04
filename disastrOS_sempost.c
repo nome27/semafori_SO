@@ -27,7 +27,9 @@ void internal_semPost(){
         List_insert(&ready_list, ready_list.last, (ListItem*) running);
     
         //elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors
-        SemDescriptorPtr* sem_descr_ptr = (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, (ListItem*) sem->waiting_descriptors.first); //rimuovo il first descriptor del semaforo dalla lista dei descrittori in attesa
+        
+        //rimuovo il first descriptor del semaforo dalla lista dei descrittori in attesa
+        SemDescriptorPtr* sem_descr_ptr = (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, (ListItem*) sem->waiting_descriptors.first); 
         List_insert(&sem->descriptors, sem->descriptors.last, (ListItem*) sem_descr_ptr); //lista dei descrittori attivi
         List_detach(&waiting_list, (ListItem*) sem_descr_ptr->descriptor->pcb); //rimuovo il processo dalla waiting_list tramite il suo puntatore al descrittore
 

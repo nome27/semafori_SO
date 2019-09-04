@@ -14,7 +14,7 @@ void internal_semWait(){
   if (!sem_descr) {  //controllo che esista
     printf("Semwait fallita per il semaforo %d\n",sem_id);
     //running->syscall_retvalue =DSOS_ERRDESCR;  //errore
-    running->syscall_retvalue =DSOS_ERSEMWAIT;
+    running->syscall_retvalue =DSOS_ERSEMWAIT; //gestione errore se non esiste
     return;
   }
 

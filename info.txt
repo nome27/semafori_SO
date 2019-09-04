@@ -1,31 +1,42 @@
 progetto: semafori_SO
 
 WHAT:
-Un semaforo è un tipo di dato astratto utilizzato per sincronizzare l'accesso a risorse condivise tra task (cioè processi o thread) o anche alla sezione critica di un programma.
-È composto da una variabile intera ed è inizializzato con un valore intero positivo.
-Il progetto verte sull'implementazione delle funzioni necessarie al funzonamento del semaforo, in particolare le operazioni principali sono la wait e la post.
-la wait: decrementa il valore del contatore del semaforo quando è richiesto l'accesso a una risorsa.
-la post: il contatore del semaforo viene incrementato quando la risirsa viene rilasciata.
+Un semaforo è un tipo di dato astratto utilizzato per sincronizzare l'accesso a risorse condivise tra task (cioè processi o thread) o alla sezione critica di un programma.
+È composto da una variabile intera ed è inizializzato con un valore
+intero positivo.
+Il progetto verte sull'implementazione delle funzioni necessarie al
+funzonamento del semaforo, in particolare le operazioni principali sono la wait e la post.
+la wait: decrementa il valore del contatore del semaforo quando è 
+richiesto l'accesso a una risorsa.
+con la post: il contatore del semaforo viene incrementato quando la risorsa viene rilasciata.
 
 
 HOW:
-il progetto verte sull'implementazione delle funzioni open, wait, post, close necessarie per il funzionamento di un semaforo.
+nel progetto vengono implementate le funzioni open, wait, post, close necessarie per il funzionamento di un semaforo.
 
-In particolare la semOpen prende in ingresso un contantore (count) e un id(sem_id) e apre un semaforo (sem). viene effettuata una verifica sul contatore, se <0 il semaforo non viene allocato e restituisco un errore. Se il semaforo non esiste nella lista, alloco il semaforo passando sem_id e count ed effettuo un nuovo controllo per verificae che l'allocazione sia andata a buon fine. Inserisco il semaforo come ultimo elemento nella lista dei semafori. A questo punto alloco anche il sem_descr che è il descrittore del semaforo
-. infine incremento il numero di semafori aperti  e alloco il puntatore a sem_descr. Inserisco il puntatore al descrittore nella lista.
+In particolare la semOpen prende in ingresso un contantore (count) e un id(sem_id) e apre un semaforo (sem). viene effettuata una verifica sul contatore, se <0 il semaforo non viene allocato e restituisco un errore. 
+Se il semaforo non esiste nella lista, alloco il semaforo passando sem_id
+e count ed effettuo un nuovo controllo per verificare che l'allocazione
+sia andata a buon fine. Inserisco il semaforo come ultimo elemento nella
+lista dei semafori e alloco anche il sem_descr che è il descrittore del semaforo. Infine incremento il numero di semafori aperti  e alloco il
+puntatore a sem_descr. Inserisco il puntatore al descrittore nella lista.
 Il valore di ritorno della semOpen è il file descriptor del semaforo.
  
 la semWait prende in ingresso l'id del semaforo (sem_id)  e prende il descrittore del semaforo dalla lista (se non è presente: errore). prendo il semaforo selativo al descrittore e, se il contatore è >0, allora rimuovo il descrittore del processo dalla lista dei descrittori e lo inserisco in coda alla lista dei waiting. inserisco il processo in esecuzione nella waiting_list. A questo punto viene tolto il primo processo dalla lista dei ready e viene mandato in esecuzione.
 
-la semPost prende in ingresso l'id del semaforo e prende il relativo descrittore. effettuo un controllo per evitare che sia vuoto. prendo il semaforo relativo a quel descrittore e incremento il suo contatore. Se il contatore <0 inserisco il processo in running nella lista dei ready. Poi elimino il primo elemento di waiting_descriptors dalla lista dei waiting e lo inserisco nella losta dei descrittori attivi. rimuovo il processo dalla waiting list tramite il suo puntatore al descrittore. Lo stato del processo è in ready e metto in esecuzione il processo rimosso dalla waiting list.
+la semPost prende in ingresso l'id del semaforo e prende il relativo descrittore. Effettua un controllo per evitare che sia vuoto. Prende il
+semaforo relativo a quel descrittore e ne incrementa il contatore. Se il
+contatore <0 il processo viene inserito in running nella lista dei ready. Elimina il primo elemento di waiting_descriptors dalla lista dei waiting e lo inserisce nella lista dei descrittori attivi. Rimuove il processo dalla
+waiting list tramite il suo puntatore al descrittore. Lo stato del processo
+è in ready e viene messo in esecuzione il processo rimosso dalla waiting list.
 
-la semClose prende in ingresso l'id del semaforo. effettua un controllo sulla lista dei descitrttori per evitare che sia vuota (in quel caso errore). Se la lista non è vuota rimuovo il semaforo dalla lista dei descrittori e gestisco eventali errori. Elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors. In questo caso, siccome sono nella close devo liberste metoria sia per il descrittore che per il puntatore. Se le liste sono vuote, eimino il semaforo dalla lista e libero memoria.
+la semClose prende in ingresso l'id del semaforo. Effettua un controllo sulla lista dei descitrttori per evitare che sia vuota (in quel caso errore). Se la lista non è vuota rimuove il semaforo dalla lista dei descrittori e gestisco eventali errori. Elimina il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors. In più nella nell'operazione di close è necessario liberare la memoria sia per il descrittore che per il puntatore. Se le liste sono vuote, elimina il semaforo dalla lista e libera memoria.
 
 è stato modificato anche il file disastrOS_constants per gestire gli errori delle funzioni precedenti.
 
 il test è stato effettuato sfruttando il paradigma produttore consumatore.
-Ho dichiarato 4 semafori (filled_sem, empty_sem, read_sem, write_sem) che sono stati inizializzati nella childFunction, gli indici di lettura e scrittura.
-Il producer sfrutta la wait in modo che mentre uno scrive non può scrivere nessun altro.Inizialmente il buffer è vuoto alla fine della sezione critica si riempie.
+Vengono dichiarati 4 semafori (filled_sem, empty_sem, read_sem, write_sem) che sono stati inizializzati nella childFunction, gli indici di lettura e scrittura e un buffer circolare di dimensione 50 su cui avvengono le operazioni di lettura e scrittura.
+Il producer sfrutta la wait in modo che mentre un processo scrive non può scrivere nessun altro. Inizialmente il buffer è vuoto alla fine della sezione critica si riempie.
 Il consumer effettua la lettura dal buffer che inizialmente è pieno e alla fine della sezione critica risulta vuoto.
  
 
