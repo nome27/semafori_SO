@@ -63,6 +63,7 @@ void sleeperFunction(void* args){
 }
 
 void childFunction(void* args){
+  printf("\n");
   //quando apro un figlio faccio partire il semaforo (quindi la open)
   printf("Hello, I am the child function %d\n",disastrOS_getpid());
   printf("I will iterate a bit, before terminating\n");
@@ -72,14 +73,15 @@ void childFunction(void* args){
   //int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
   //printf("fd=%d\n", fd);
   //printf("PID: %d, terminating\n", disastrOS_getpid());
-  
+  printf("\n");
   printf("apertura semafori\n");
-
+  
   filled_sem = disastrOS_semOpen(1, 0);  //0 è il numero di posti del buffer occupati all'inizio
   empty_sem = disastrOS_semOpen(2, BUFFER_LENGTH);  //buffer_length indica il numero di posti liberi all'inizio
   read_sem = disastrOS_semOpen(3, 1);  //semaforo per la lettura
   write_sem = disastrOS_semOpen(4,1);  //semaforo per la scrittura
-
+  printf("\n");
+  
   for (int i=0; i<CYCLES; ++i){
    if(disastrOS_getpid()%2==0){ // se il pid  è pari parte la producer(scrittura nel buffer), altrimenti la consumer
      int prod=producer();
