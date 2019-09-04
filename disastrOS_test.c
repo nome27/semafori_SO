@@ -96,8 +96,8 @@ void childFunction(void* args){
   disastrOS_printStatus();
   printf("sta terminando pid=%d\n",disastrOS_getpid());
 
+  printf("\n");
   printf("chiusura semafori\n");
-
 
   disastrOS_semClose(filled_sem);
   disastrOS_semClose(empty_sem);
@@ -140,14 +140,14 @@ void initFunction(void* args) {
     --alive_children;
   }
 
-  printf(" stato finale buffer\n");
+  printf("-----  stato finale buffer  -----\n");
   for(int i=0; i < BUFFER_LENGTH; i++){
     printf("%d ", buf[i]);
   }
 
 
   printf("\n");
-  printf("shutdown!");
+  printf("shutdown!\n");
   disastrOS_shutdown();
 }
 
