@@ -17,6 +17,17 @@ Il valore di ritorno della semOpen è il file descriptor del semaforo.
  
 la semWait prende in ingresso l'id del semaforo (sem_id)  e prende il descrittore del semaforo dalla lista (se non è presente: errore). prendo il semaforo selativo al descrittore e, se il contatore è >0, allora rimuovo il descrittore del processo dalla lista dei descrittori e lo inserisco in coda alla lista dei waiting. inserisco il processo in esecuzione nella waiting_list. A questo punto viene tolto il primo processo dalla lista dei ready e viene mandato in esecuzione.
 
+la semPost prende in ingresso l'id del semaforo e prende il relativo descrittore. effettuo un controllo per evitare che sia vuoto. prendo il semaforo relativo a quel descrittore e incremento il suo contatore. Se il contatore <0 inserisco il processo in running nella lista dei ready. Poi elimino il primo elemento di waiting_descriptors dalla lista dei waiting e lo inserisco nella losta dei descrittori attivi. rimuovo il processo dalla waiting list tramite il suo puntatore al descrittore. Lo stato del processo è in ready e metto in esecuzione il processo rimosso dalla waiting list.
+
+la semClose prende in ingresso l'id del semaforo. effettua un controllo sulla lista dei descitrttori per evitare che sia vuota (in quel caso errore). Se la lista non è vuota rimuovo il semaforo dalla lista dei descrittori e gestisco eventali errori. Elimino il primo elemento di waiting_descriptors dalla lista sem->waiting_descriptors. In questo caso, siccome sono nella close devo liberste metoria sia per il descrittore che per il puntatore. Se le liste sono vuote, eimino il semaforo dalla lista e libero memoria.
+
+è stato modificato anche il file disastrOS_constants per gestire gli errori delle funzioni precedenti.
+
+il test è stato effettuato sfruttando il paradigma produttore consumatore.
+Ho dichiarato 4 semafori (filled_sem, empty_sem, read_sem, write_sem) che sono stati inizializzati nella childFunction, gli indici di lettura e scrittura.
+Il producer sfrutta la wait in modo che mentre uno scrive non può scrivere nessun altro.Inizialmente il buffer è vuoto alla fine della sezione critica si riempie.
+Il consumer effettua la lettura dal buffer che inizialmente è pieno e alla fine della sezione critica risulta vuoto.
+ 
 
 HOW TO RUN:
 per compilare aprire il terminale nella cartella del progetto e scrivere il comando-> make. Per eseguire il test digitare-> ./disastrOS_test
