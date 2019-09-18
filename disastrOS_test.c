@@ -122,7 +122,7 @@ void initFunction(void* args) {
    
    shared_variable=1;   //variabile globale settata a 1
 
-  printf("I feel like to spawn 10 nice threads\n");
+  printf("\nI feel like to spawn 10 nice threads\n");
   int alive_children=0;        //processi figlio vivi
   for (int i=0; i<10; ++i) {   //creo 10 thread
     disastrOS_spawn(childFunction, 0);

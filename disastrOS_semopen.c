@@ -33,9 +33,10 @@ void internal_semOpen(){
             running->syscall_retvalue = DSOS_ERSEMOPEN;
             return;
         }
+		printf("allocazione del semaforo con id=%d riuscita \n", sem_id);
 		List_insert(&semaphores_list, semaphores_list.last, (ListItem*)sem); //e inserisco il semaforo alla fine della lista dei semafori attivi
 	}
-	printf("allocazione del semaforo con id=%d riuscita \n", sem_id);
+	
 	
 	//alloco il descrittore del semaforo
 	SemDescriptor* sem_descr= SemDescriptor_alloc(running-> last_sem_fd,sem,running);//prende in ingresso un intero, il semaforo, e il nome del pcb
